@@ -1,0 +1,50 @@
+/* Write a SQL Query that lists only the lowercase email and discards the uppercase email for only combination of lower case and upper case emails */
+
+
+/* Given Tables */
+
+CREATE TABLE employees  (employee_id int,employee_name varchar(15), email_id varchar(15) );
+
+
+
+/* Insert Data into Team Table */
+delete from employees;
+INSERT INTO employees (employee_id,employee_name, email_id) VALUES ('101','Liam Alton', 'li.al@abc.com');
+INSERT INTO employees (employee_id,employee_name, email_id) VALUES ('102','Josh Day', 'jo.da@abc.com');
+INSERT INTO employees (employee_id,employee_name, email_id) VALUES ('103','Sean Mann', 'se.ma@abc.com'); 
+INSERT INTO employees (employee_id,employee_name, email_id) VALUES ('104','Evan Blake', 'ev.bl@abc.com');
+INSERT INTO employees (employee_id,employee_name, email_id) VALUES ('105','Toby Scott', 'jo.da@abc.com');
+INSERT INTO employees (employee_id,employee_name, email_id) VALUES ('106','Anjali Chouhan', 'JO.DA@ABC.COM');
+INSERT INTO employees (employee_id,employee_name, email_id) VALUES ('107','Ankit Bansal', 'AN.BA@ABC.COM');
+
+
+
+/* SQL Query Output - 1st solution*/
+WITH cte AS(SELECT *,
+RANK()OVER(PARTITION BY email_id ORDER BY ASCII(email_id) DESC) AS rnk
+FROM employees)
+
+SELECT * FROM cte WHERE rnk =1
+
+
+/* SQL Query Output - 2nd solution - Case sensitive*/
+ALTER TABLE employees
+ALTER COLUMN email_id VARCHAR(15) COLLATE SQL_Latin1_General_CP1_CS_AS;
+
+WITH cte AS(SELECT *,
+RANK()OVER(PARTITION BY LOWER(email_id) ORDER BY ASCII(email_id) DESC) AS rnk
+FROM employees)
+
+SELECT * FROM cte WHERE rnk=1
+
+
+/* Query Output */
+employee_id	employee_name	email_id	rnk
+107	Ankit Bansal	AN.BA@ABC.COM	1
+104	Evan Blake	ev.bl@abc.com	1
+105	Toby Scott	jo.da@abc.com	1
+102	Josh Day	jo.da@abc.com	1
+101	Liam Alton	li.al@abc.com	1
+103	Sean Mann	se.ma@abc.com	1
+
+
