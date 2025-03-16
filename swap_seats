@@ -1,0 +1,76 @@
+/* Write a SQL Query to swap the seatid of every two consecutive students. If the number of students is odd then the id of the student is not swapped */
+
+/* Given Tables */
+script: 
+CREATE TABLE seats (
+    id INT,
+    student VARCHAR(10)
+);
+
+
+/* Insert Data into Team Table */
+INSERT INTO seats VALUES 
+(1, 'Amit'),
+(2, 'Deepa'),
+(3, 'Rohit'),
+(4, 'Anjali'),
+(5, 'Neha'),
+(6, 'Sanjay'),
+(7, 'Priya');
+
+
+/* SQL Query Output - 1st solution considering id is in ascending order*/
+
+SELECT *,
+CASE WHEN id%2!=0 AND id =(SELECT MAX(id) FROM seats) THEN id
+	 WHEN id%2 =0 THEN id-1 
+     ELSE id+1
+END AS new_seat_id
+FROM cte
+
+
+/* SQL Query Output - 2nd solution using rank to order the id before swapping*/
+
+WITH cte as(SELECT *,
+RANK()OVER(ORDER BY id ASC) AS rnk
+FROM seats)
+
+SELECT *,
+CASE WHEN id%2!=0 AND id =(SELECT MAX(id) FROM seats) THEN id
+	 WHEN id%2 =0 THEN id-1 
+     ELSE id+1
+END AS new_seat_id
+FROM cte
+
+
+/* SQL Query Output - 3RD solution using LEAD and LAG*/
+
+SELECT *,
+CASE WHEN id%2!=0 AND id = (SELECT MAX(id) FROM seats) THEN id
+	 WHEN id%2=0 THEN LAG(id,1)OVER(ORDER BY id)
+     ELSE LEAD(id,1,id)OVER(ORDER BY id)
+END AS new_Seat_id
+FROM seats
+
+
+/* Update statement to update id with new_seat_id */
+UPDATE seats
+SET seats.id = new_Seats.new_seat_id
+FROM (SELECT *,
+CASE WHEN id%2!=0 AND id = (SELECT MAX(id) FROM seats) THEN id
+	 WHEN id%2=0 THEN LAG(id,1)OVER(ORDER BY id)
+     ELSE LEAD(id,1,id)OVER(ORDER BY id)
+END AS new_Seat_id
+FROM seats)new_Seats
+WHERE seats.id = new_Seats.id
+
+
+/* Query Result */
+id	student
+2	  Amit
+1  	Deepa
+4	  Rohit
+3  	Anjali
+6  	Neha
+5  	Sanjay
+7  	Priya
