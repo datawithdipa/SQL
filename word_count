@@ -1,0 +1,32 @@
+/* Write a SQL Query that to find the words that are repeating itself more than once considering all the rows of the content column */
+
+
+/* Given Tables */
+create table strings (
+file_name varchar(25),
+content varchar(200)
+);
+
+
+/* Insert Data into Team Table */
+delete from strings;
+insert into strings values ('python bootcamp1.txt','python for data analytics 0 to hero bootcamp starting on Jan 6th')
+,('python bootcamp2.txt','classes will be held on weekends from 11am to 1 pm for 5-6 weeks')
+,('python bootcamp3.txt','use code NY2024 to get 33 percent off. You can register from namaste sql website. Link in pinned comment')
+
+
+/* SQL Query Output */
+SELECT value as word, COUNT(*) AS cnt
+FROM strings
+CROSS APPLY string_split(content," ")
+GROUP BY value
+HAVING COUNT(*) > 1
+ORDER BY cnt DESC
+
+
+/* Query Result */
+word	cnt
+to	  3
+for	  2
+from	2
+on	  2
