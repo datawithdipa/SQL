@@ -1,0 +1,32 @@
+/* Write a SQL Query to find the origin and destination for each customer id */
+
+/* Given Tables */
+CREATE TABLE flights 
+(
+    cid VARCHAR(512),
+    fid VARCHAR(512),
+    origin VARCHAR(512),
+    Destination VARCHAR(512)
+);
+
+/* Insert Data into Team Table */
+
+INSERT INTO flights (cid, fid, origin, Destination) VALUES ('1', 'f1', 'Del', 'Hyd');
+INSERT INTO flights (cid, fid, origin, Destination) VALUES ('1', 'f2', 'Hyd', 'Blr');
+INSERT INTO flights (cid, fid, origin, Destination) VALUES ('2', 'f3', 'Mum', 'Agra');
+INSERT INTO flights (cid, fid, origin, Destination) VALUES ('2', 'f4', 'Agra', 'Kol');
+
+    
+/* SQL Query Output*/
+
+SELECT t1.cid as customer_id,t1.origin as origin,t2.destination as destination
+FROM flights t1
+INNER JOIN flights t2
+ON t1.cid = t2.cid AND t1.destination = t2.origin
+
+
+/* Query Result */
+
+customer_id	origin	destination
+1	            Del	      Blr
+2	            Mum	      Kol
