@@ -26,6 +26,11 @@ FULL OUTER JOIN target t
 ON s.id = t.id
 
 /*SQL Query using UnionALL */
+
+WITH CTE AS(SELECT *,'source' as section FROM source
+UNION ALL
+SELECT *,'target' as section FROM target)
+
 SELECT id,
 CASE
 	WHEN MAX(section) = 'source' THEN "New at source"
