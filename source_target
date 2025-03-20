@@ -1,0 +1,46 @@
+/* Write a SQL Query  to identify new id in source, target nad mismatched*/
+
+
+/* Given Tables */
+
+create table source(id int, name varchar(5))
+
+create table target(id int, name varchar(5))
+
+/* Insert Data into Team Table */
+
+insert into source values(1,'A'),(2,'B'),(3,'C'),(4,'D')
+
+insert into target values(1,'A'),(2,'B'),(4,'X'),(5,'F');
+
+
+/* SQL Query Output */
+SELECT coalesce(s.id,t.id) as id,
+CASE
+	WHEN s.name!=t.name THEN "Mismatched"
+    WHEN s.name IS NULL THEN "New in Target"
+    WHEN t.name IS NULL THEN "New in Source"
+END AS Comment
+FROM source s
+FULL OUTER JOIN target t
+ON s.id = t.id
+
+/*SQL Query using UnionALL */
+SELECT id,
+CASE
+	WHEN MAX(section) = 'source' THEN "New at source"
+    WHEN MAX(section) = 'target' THEN "New at Target"
+    WHEN MIN(section)!= MAX(section) THEN "Mismatched"
+END AS Comment
+FROM CTE
+GROUP BY id
+HAVING COUNT(*) = 1 OR (COUNT(*) =2 AND MIN(name) != MAX(name))
+
+
+
+/* Query Result */
+
+id	Comment
+3	  New in Source
+4	  Mismatched
+5	  New in Target
