@@ -1,0 +1,40 @@
+/* Write a SQL Query to identify new customers added each month*/
+
+
+/* Given Tables */
+
+CREATE TABLE sales 
+(
+    order_date date,
+    customer VARCHAR(512),
+    qty INT
+);
+
+/* Insert Data into Team Table */
+INSERT INTO sales (order_date, customer, qty) VALUES ('2021-01-01', 'C1', '20');
+INSERT INTO sales (order_date, customer, qty) VALUES ('2021-01-01', 'C2', '30');
+INSERT INTO sales (order_date, customer, qty) VALUES ('2021-02-01', 'C1', '10');
+INSERT INTO sales (order_date, customer, qty) VALUES ('2021-02-01', 'C3', '15');
+INSERT INTO sales (order_date, customer, qty) VALUES ('2021-03-01', 'C5', '19');
+INSERT INTO sales (order_date, customer, qty) VALUES ('2021-03-01', 'C4', '10');
+INSERT INTO sales (order_date, customer, qty) VALUES ('2021-04-01', 'C3', '13');
+INSERT INTO sales (order_date, customer, qty) VALUES ('2021-04-01', 'C5', '15');
+INSERT INTO sales (order_date, customer, qty) VALUES ('2021-04-01', 'C6', '10');
+
+
+/* SQL Query Output */
+SELECT order_date,COUNT(DISTINCT customer) AS new_order FROM (
+SELECT *,
+ROW_NUMBER()OVER(PARTITION BY customer ORDER BY order_date) as rnk
+FROM sales)t
+WHERE rnk =1
+GROUP BY order_date
+
+
+/* Query Result */
+
+order_date	new_order
+2021-01-01	2
+2021-02-01	1
+2021-03-01	2
+2021-04-01	1
