@@ -1,0 +1,95 @@
+/* Write a SQL Query to identify parent-child names and relationship*/
+
+
+/* Given Tables */
+
+create table people
+(id int primary key not null,
+ name varchar(20),
+ gender char(2));
+
+create table relations
+(
+    c_id int,
+    p_id int,
+    FOREIGN KEY (c_id) REFERENCES people(id),
+    foreign key (p_id) references people(id)
+);
+
+
+
+/* Insert Data into Team Table */
+insert into people (id, name, gender)
+values
+    (107,'Days','F'),
+    (145,'Hawbaker','M'),
+    (155,'Hansel','F'),
+    (202,'Blackston','M'),
+    (227,'Criss','F'),
+    (278,'Keffer','M'),
+    (305,'Canty','M'),
+    (329,'Mozingo','M'),
+    (425,'Nolf','M'),
+    (534,'Waugh','M'),
+    (586,'Tong','M'),
+    (618,'Dimartino','M'),
+    (747,'Beane','M'),
+    (878,'Chatmon','F'),
+    (904,'Hansard','F');
+
+insert into relations(c_id, p_id)
+values
+    (145, 202),
+    (145, 107),
+    (278,305),
+    (278,155),
+    (329, 425),
+    (329,227),
+    (534,586),
+    (534,878),
+    (618,747),
+    (618,904);
+
+
+/* SQL Query Output */
+WITH f_name AS(
+SELECT p.name as father_name,r.c_id
+FROM people p
+INNER JOIN relations r 
+ON p.id = r.p_id
+WHERE p.gender ='M'),m_name AS(
+SELECT p.name as mother_name,r.c_id
+FROM people p
+INNER JOIN relations r
+ON p.id = r.p_id
+WHERE gender ='F')
+    
+SELECT p.name as child_name,father_name,mother_name
+FROM f_name f 
+INNER JOIN m_name m 
+ON f.c_id = m.c_id
+INNER JOIN people p
+ON p.id = f.c_id
+
+
+/* Optimized Query */
+SELECT p.name as c_name,t.f_name,t.m_name
+FROM (SELECT r.c_id as c_id,
+MAX(CASE WHEN gender ='M' THEN p.name END) AS f_name,
+MAX(CASE WHEN gender ='F' THEN p.name END) AS m_name
+FROM relations r
+INNER JOIN people p
+ON r.p_id = p.id
+GROUP BY r.c_id)t
+INNER JOIN people p
+ON p.id = t.c_id
+
+
+/* Query Result */
+
+child_name	father_name	mother_name
+Hawbaker	Blackston	Days
+Keffer	Canty	Hansel
+Mozingo	Nolf	Criss
+Waugh	Tong	Chatmon
+Dimartino	Beane	Hansard
